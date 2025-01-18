@@ -5,7 +5,8 @@ import userModel from '../models/userModel.js'
 import {v2 as cloudinary } from 'cloudinary'
 import doctorModel from '../models/doctorModel.js'
 import appointmentModel from '../models/appointmentModel.js'
-import payStack from 'paystack'
+import Transaction from '../models/paymentModel.js';
+
 
 
 
@@ -308,6 +309,45 @@ const registerUsers = async (req, res) => {
     }
 
 
+    const successfulPayment = async (req,res) => {
+
+        console.log("yes")
+
+        try {
+            const {message,reference,status,trans,transaction,trxref} = req.body
+
+            console.log('Received Data:', req.body)
+
+            if (!message || !reference|| !status || !trans || !transaction || !trxref){
+                return res.status(400).json({ success: false, message:"failed to make payment"})
+            }
+            if (status !== "success") {
+                return res.status(400).json({ success: false, message: "Payment not successful" });
+              }
+
+              const newTransaction = new Transaction({
+                message,
+                reference,
+                status,
+                trans,
+                transaction,
+                trxref,
+              });
+              
+              console.log(newTransaction)
+
+              await newTransaction.save();
+
+              return res.status(200).json({ success: true, message: "Payment successful", data: newTransaction });
+
+
+        } catch (error) {
+              console.error(error)
+             res.status(500).json({success:false, message:error.message})
+        }
+        }
+
+    
     
 
    
@@ -320,4 +360,4 @@ const registerUsers = async (req, res) => {
 
 
 
-export {registerUsers,loginUser,getProfile,updateProfile,bookAppointment,listAppointments,cancelAppointment,retriveUser};
+export {registerUsers,loginUser,getProfile,updateProfile,bookAppointment,listAppointments,cancelAppointment,retriveUser,successfulPayment};
