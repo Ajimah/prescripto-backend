@@ -5,6 +5,9 @@ import userModel from '../models/userModel.js'
 import {v2 as cloudinary } from 'cloudinary'
 import doctorModel from '../models/doctorModel.js'
 import appointmentModel from '../models/appointmentModel.js'
+import payStack from 'paystack'
+
+
 
 
 //API TO REGISTER USER
@@ -66,6 +69,7 @@ const registerUsers = async (req, res) => {
 
             if (!user) {
             return res.status(500).json({success:false, message:'User not found'})
+
             }
 
             const isMatch = await bcrypt.compare(password, user.password)
@@ -93,6 +97,8 @@ const registerUsers = async (req, res) => {
             const {userId} = req.body
             const userData = await userModel.findById(userId).select('-password')
             res.json({success:true, userData})
+
+            console.log(userData)
 
 
         } catch (error) {
@@ -159,7 +165,7 @@ const registerUsers = async (req, res) => {
             }
            
 
-            console.log(docData)
+           
 
 
             let slots_booked = docData.slots_booked
@@ -194,8 +200,7 @@ const registerUsers = async (req, res) => {
             docData,
             amount: docData.fees, 
             date: Date.now(),
-          };
-     
+          }
         
           const newAppointment = new appointmentModel(appointmentData)
           await newAppointment.save()
@@ -215,7 +220,7 @@ const registerUsers = async (req, res) => {
     }
 
     
-    //api to get user appointments for frontend mt appointment page
+    //api to get user appointments for frontend my appointment page
     
     const listAppointments = async (req,res) => {
         try {
@@ -270,22 +275,49 @@ const registerUsers = async (req, res) => {
     }
 
 
-    const razorpayInstance = new razorpay({
-        key_id: process.env.RAZORPAY_KEY_ID,
-        key_secret: process.env.RAZORPAY_KEY_SECRET})
+
+    //api making online payment for appointmnt using paystack
 
 
+    const retriveUser = async (req, res) => {
 
-    //api making online payment for appointmnt using razorpay
+             const { docId } = req.params;
+             const doctor = await doctorModel.findById(docId);
 
-    const paymentRazorpay = async (req, res) => {
-        
+              const data = []
+              data.push({doc: doctor})
+              data.push({userEmail: 'demo@gmail.com'})
+              data.push({userName: 'demoName'})
+
+              
+
+                
+            // console.log(data)
+
+                if (doctor) {
+                    res.json({success:true, data})
+                        console.log(data)
+              
+        } else {
+            res.status(404).json({
+                success: false,
+                message: "Doctor not found",
+            })
+            }
+
     }
 
 
+    
+
+   
+    
 
 
 
 
 
-export {registerUsers,loginUser,getProfile,updateProfile,bookAppointment,listAppointments,cancelAppointment};
+
+
+
+export {registerUsers,loginUser,getProfile,updateProfile,bookAppointment,listAppointments,cancelAppointment,retriveUser};
