@@ -311,30 +311,34 @@ const registerUsers = async (req, res) => {
 
     const successfulPayment = async (req,res) => {
 
-        console.log("yes")
-
+        console.log(req);
+        
         try {
-            const {message,reference,status,trans,transaction,trxref} = req.body
-
-            console.log('Received Data:', req.body)
-
-            if (!message || !reference|| !status || !trans || !transaction || !trxref){
+            const {message,reference,status,trans,transaction,trxref,redirecturl} = req.body
+            
+            
+            
+            
+            if (!message || !reference|| !status || !trans || !transaction || !trxref  || !redirecturl){
                 return res.status(400).json({ success: false, message:"failed to make payment"})
             }
             if (status !== "success") {
                 return res.status(400).json({ success: false, message: "Payment not successful" });
-              }
-
-              const newTransaction = new Transaction({
+            }
+            
+            const newTransaction = new Transaction({
                 message,
                 reference,
                 status,
                 trans,
                 transaction,
                 trxref,
-              });
-              
-              console.log(newTransaction)
+                redirecturl,
+            });
+
+            
+            
+               console.log(newTransaction)
 
               await newTransaction.save();
 
@@ -346,7 +350,38 @@ const registerUsers = async (req, res) => {
              res.status(500).json({success:false, message:error.message})
         }
         }
+        
 
+        
+
+          
+            const getAllTransactions = async (req, res) => {
+
+                
+                
+                console.log("yes");
+            try {
+                
+                const { data } = req.body;
+                console.log(data);
+               
+                const transactions = await Transaction.find(data);
+
+                if (!transactions) {
+                return res.status(404).json({ success: false, message: "No transactions found." });
+                }
+
+                res.status(200).json({
+                success: true,
+                message: transactions,
+                });
+            } catch (error) {
+                console.error("Error fetching transactions:", error.message);
+                res.status(500).json({ success: false, message: "Internal server error." });
+            }
+            };
+
+           
     
     
 
@@ -360,4 +395,4 @@ const registerUsers = async (req, res) => {
 
 
 
-export {registerUsers,loginUser,getProfile,updateProfile,bookAppointment,listAppointments,cancelAppointment,retriveUser,successfulPayment};
+export {registerUsers,loginUser,getProfile,updateProfile,bookAppointment,listAppointments,cancelAppointment,retriveUser,successfulPayment, getAllTransactions};

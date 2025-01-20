@@ -6,13 +6,17 @@ const transactionSchema = new mongoose.Schema({
     required: true,
     default: 'Approved',
   },
+  redirecturl: {
+     type: String,
+      required: true },
+
   reference: {
     type: String,
     required: true,
     unique: true,
   },
   status: {
-    type: Boolean,
+    type: String,
     required: true,
   },
   trans: {

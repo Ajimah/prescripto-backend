@@ -3,6 +3,7 @@ import { addDoctor, allDoctors, LoginAdmin } from "../controller/adminController
 import upload from "../middleware/multer.js";
 import authAdmin from "../middleware/authAdmin.js";
 import {changeAvailability} from '../controller/doctorController.js'
+import { getAllTransactions } from "../controller/userController.js";
 
 
 
@@ -13,6 +14,8 @@ adminRouter.post("/add-doctor", authAdmin, upload.single("image"), addDoctor);
 adminRouter.post("/login", LoginAdmin);
 adminRouter.post("/all-doctors",authAdmin ,allDoctors);
 adminRouter.post("/change-availability",authAdmin ,changeAvailability);
+adminRouter.post('/getAllTransactions/',authAdmin, getAllTransactions);
+
 
 export default adminRouter
 
