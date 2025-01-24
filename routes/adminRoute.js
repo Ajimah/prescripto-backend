@@ -1,5 +1,5 @@
 import express from "express";
-import { addDoctor, allDoctors, LoginAdmin } from "../controller/adminController.js";
+import { addDoctor, allDoctors, LoginAdmin,appointmentAdmin, appointmentCancel , adminDashboard } from "../controller/adminController.js";
 import upload from "../middleware/multer.js";
 import authAdmin from "../middleware/authAdmin.js";
 import {changeAvailability} from '../controller/doctorController.js'
@@ -15,14 +15,11 @@ adminRouter.post("/login", LoginAdmin);
 adminRouter.post("/all-doctors",authAdmin ,allDoctors);
 adminRouter.post("/change-availability",authAdmin ,changeAvailability);
 adminRouter.post('/getAllTransactions/',authAdmin, getAllTransactions);
+adminRouter.get('/appointments', authAdmin,appointmentAdmin);
+adminRouter.post('/cancel-appointment',authAdmin,appointmentCancel);
+adminRouter.get('/dashboard', authAdmin,adminDashboard )
 
 
 export default adminRouter
 
-// import express from "express";
-// import { createPost, deletePost, getAllPosts, getSinglePost, likeUnlikePost, replyToPost } from "../../controllers/post.controller.js";
-// import protectRoute from "../../middlewares/protectRoute.js";
-// import upload from "../../config/multer.js";
-// const router = express.Router()
 
-// router.post("/add", protectRoute, upload.single('img'), createPost);
